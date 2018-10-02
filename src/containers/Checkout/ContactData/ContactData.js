@@ -7,38 +7,24 @@ import Input from "../../../components/UI/Input/Input";
 import { connect } from "react-redux";
 import withErrorHandler from "../../../hoc/withErrorHandler/withErrorHandler";
 import * as actions from "../../../store/actions/index";
+import genFormItem from "../../../utils/genFormItem";
 
 class ContactData extends Component {
-    genFormItem(input, type, placeholder, rules) {
-        let result = {
-            elementType: input,
-            elementConfig: {
-                type: type,
-                placeholder: placeholder
-            },
-            value: "",
-            valid: true,
-            ...rules
-        };
-
-        return result;
-    }
-
     state = {
         orderForm: {
-            name: this.genFormItem("input", "text", "Your Name", {
+            name: genFormItem("input", "text", "Your Name", {
                 validation: { required: true }
             }),
-            street: this.genFormItem("input", "text", "Street", {
+            street: genFormItem("input", "text", "Street", {
                 validation: { required: true }
             }),
-            zipCode: this.genFormItem("input", "text", "Zip Code", {
+            zipCode: genFormItem("input", "text", "Zip Code", {
                 validation: { required: true, minLength: 6, maxLength: 8 }
             }),
-            country: this.genFormItem("input", "text", "Country", {
+            country: genFormItem("input", "text", "Country", {
                 validation: { required: true }
             }),
-            email: this.genFormItem("input", "email", "your@email.com", {
+            email: genFormItem("input", "email", "your@email.com", {
                 validation: { required: true }
             }),
             deliveryMethod: {
@@ -54,7 +40,7 @@ class ContactData extends Component {
                 value: "fastest",
                 validation: {}
             }
-        },
+        }
     };
 
     orderHandler = event => {
@@ -70,10 +56,11 @@ class ContactData extends Component {
         const order = {
             ingredients: this.props.ingredients,
             totalPrice: this.props.totalPrice,
-            orderData: formData
+            orderData: formData,
+            userId: this.props.userId
         };
 
-        this.props.onOrderBurger(order);
+        this.props.onOrderBurger(order, this.props.token);
     };
 
     checkValidity(value, rules) {
@@ -160,15 +147,19 @@ const mapStateToProps = state => {
     return {
         ingredients: state.burgerBuilder.ingredients,
         totalPrice: state.burgerBuilder.totalPrice,
-        loading: state.order.loading
+        loading: state.order.loading,
+        token: state.auth.token,
+        userId: state.auth.userId
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        onOrderBurger: orderData =>
-            dispatch(actions.purchaseBurger(orderData))
-    }
+        onOrderBurger: (orderData, token) => dispatch(actions.purchaseBurger(orderData, token))
+    };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(ContactData, axios));
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(withErrorHandler(ContactData, axios));
