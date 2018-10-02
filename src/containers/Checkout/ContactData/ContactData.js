@@ -7,7 +7,7 @@ import Input from "../../../components/UI/Input/Input";
 import { connect } from "react-redux";
 import withErrorHandler from "../../../hoc/withErrorHandler/withErrorHandler";
 import * as actions from "../../../store/actions/index";
-import genFormItem from "../../../utils/genFormItem";
+import { genFormItem, checkValidity } from "../../../utils/utility";
 
 class ContactData extends Component {
     state = {
@@ -63,28 +63,6 @@ class ContactData extends Component {
         this.props.onOrderBurger(order, this.props.token);
     };
 
-    checkValidity(value, rules) {
-        let isValid = true;
-
-        if (!rules) {
-            return true;
-        }
-
-        if (rules.required) {
-            isValid = value.trim() !== "" && isValid;
-        }
-
-        if (rules.minLength) {
-            isValid = value.length >= rules.minLength && isValid;
-        }
-
-        if (rules.maxLength) {
-            isValid = value.length <= rules.minLength && isValid;
-        }
-
-        return isValid;
-    }
-
     inputChangedHandler = (event, inputIdentifier) => {
         const updateOrderForm = {
             ...this.state.orderForm
@@ -95,7 +73,7 @@ class ContactData extends Component {
         };
 
         updatedFormElement.value = event.target.value;
-        updatedFormElement.valid = this.checkValidity(
+        updatedFormElement.valid = checkValidity(
             updatedFormElement.value,
             updatedFormElement.validation
         );
@@ -155,7 +133,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onOrderBurger: (orderData, token) => dispatch(actions.purchaseBurger(orderData, token))
+        onOrderBurger: (orderData, token) =>
+            dispatch(actions.purchaseBurger(orderData, token))
     };
 };
 
