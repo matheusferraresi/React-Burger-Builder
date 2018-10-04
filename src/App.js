@@ -9,7 +9,7 @@ import BurgerBuilder from "./containers/BurgerBuilder/BurgerBuilder";
 import * as actions from "./store/actions/index";
 
 const asynCheckout = asyncComponent(() => {
-    return import("./components/Layout/Layout")
+    return import("./containers/Checkout/Checkout")
 })
 
 const asyncOrders = asyncComponent(() => {
